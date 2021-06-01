@@ -57,13 +57,12 @@ func draw(deck []d.Card, nmbOfCards int, hand Hand) ([]d.Card, Hand) {
 	return deck, hand
 }
 
-func dealerChoice(deck []d.Card, dealer Hand) {
+func dealerChoice(deck []d.Card, dealer Hand) int {
 
 	for {
 		fmt.Printf("Dealer: %v  (%d) \n\n", dealer, dealer.value())
 
 		if dealer.value() == blackjack {
-			fmt.Println("Dealer has won!")
 			break
 
 		} else if dealer.value() >= 17 && dealer.value() < blackjack {
@@ -73,11 +72,10 @@ func dealerChoice(deck []d.Card, dealer Hand) {
 					deck, dealer = draw(deck, 1, dealer)
 					break
 				} else {
-					return
+					return dealer.value()
 				}
 			}
 		} else if dealer.value() > blackjack {
-			fmt.Println("Dealer has busted. Player wins")
 			break
 
 		} else {
@@ -85,6 +83,8 @@ func dealerChoice(deck []d.Card, dealer Hand) {
 		}
 
 	}
+
+	return dealer.value()
 
 }
 
@@ -119,9 +119,9 @@ func start(deck []d.Card, player, dealer Hand) {
 			fmt.Printf("Dealer: %v \n\n", dealer[0])
 			fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 		case 2:
-			if dealer.value() < blackjack {
-				dealerChoice(deck, dealer)
+			dealerValue := dealerChoice(deck, dealer)
 
+			if dealerValue < blackjack {
 				// fmt.Printf("Dealer: %v  (%d) \n\n", dealer, dealer.value())
 				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 
@@ -129,27 +129,29 @@ func start(deck []d.Card, player, dealer Hand) {
 					fmt.Println("You have been busted")
 					return
 
-				} else if player.value() == dealer.value() {
+				} else if player.value() == dealerValue {
 					fmt.Println("It is a push. Nobody wins")
 					return
 
-				} else if player.value() > dealer.value() {
+				} else if player.value() > dealerValue {
 					fmt.Println("The player has won")
 					return
 
-				} else if player.value() < dealer.value() {
+				} else if player.value() < dealerValue {
 					fmt.Println("The dealer has won")
 					return
 				}
 
-			} else if dealer.value() == blackjack {
-				fmt.Printf("Dealer: %v  (%d) \n\n", dealer, dealer.value())
+			} else if dealerValue == blackjack {
+				// fmt.Printf("Dealer: %v  (%d) \n\n", dealer, dealer.value())
 				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 				fmt.Println("The dealer has won")
 				return
 
 			} else {
 				fmt.Println("Dealer is busted!")
+				fmt.Println("The player has won")
+
 			}
 		}
 
