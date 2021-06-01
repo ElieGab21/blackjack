@@ -149,6 +149,7 @@ func start(deck []d.Card, player, dealer Hand) {
 				return
 
 			} else {
+				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 				fmt.Println("Dealer is busted!")
 				fmt.Println("The player has won")
 
