@@ -28,21 +28,36 @@ func (h Hand) String() string {
 //To calculate the value of the hand
 func (h Hand) value() int {
 	var value int
+	var aces int
 
 	for _, card := range h {
-
 		switch card.Rank {
 		case d.Ace: //Ace value varies between 1 and 11
-			if value <= 10 {
-				value += 11
-			} else {
-				value += 1
-			}
+			aces++
 		case d.Jack, d.Queen, d.King: //All have the same value of 10
 			value += 10
 		default:
 			value += int(card.Rank)
 		}
+	}
+
+	if aces > 0 {
+		var possibleSolutions []int
+
+		for i := 0; i <= aces; i++ {
+			possibleSolutions = append(possibleSolutions, value+(aces-i)+(11*i))
+		}
+
+		value = func(v []int) (m int) {
+			m = v[0]
+
+			for i := 1; i < len(v); i++ {
+				if v[i] > m && v[i] <= blackjack {
+					m = v[i]
+				}
+			}
+			return
+		}(possibleSolutions)
 	}
 
 	return value
@@ -122,7 +137,6 @@ func start(deck []d.Card, player, dealer Hand) {
 			dealerValue := dealerChoice(deck, dealer)
 
 			if dealerValue < blackjack {
-				// fmt.Printf("Dealer: %v  (%d) \n\n", dealer, dealer.value())
 				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 
 				if player.value() > blackjack {
@@ -143,7 +157,6 @@ func start(deck []d.Card, player, dealer Hand) {
 				}
 
 			} else if dealerValue == blackjack {
-				// fmt.Printf("Dealer: %v  (%d) \n\n", dealer, dealer.value())
 				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 				fmt.Println("The dealer has won")
 				return
@@ -152,7 +165,7 @@ func start(deck []d.Card, player, dealer Hand) {
 				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 				fmt.Println("Dealer is busted!")
 				fmt.Println("The player has won")
-
+				return
 			}
 		}
 
@@ -201,18 +214,5 @@ func main() {
 			}
 		}
 	}(player, dealer)
-
-	// for i := 0; i < 2; i++ {
-	// 	deck, player = draw(deck, 1, player)
-	// 	deck, dealer = draw(deck, 1, dealer)
-	// }
-
-	// fmt.Println()
-	// fmt.Printf("Dealer: %v \n\n", dealer[0])
-	// fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
-
-	// if player.value() == 21 {
-	// 	fmt.Println("The player has won")
-	// }
 
 }
