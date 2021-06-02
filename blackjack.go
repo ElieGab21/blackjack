@@ -71,7 +71,7 @@ func draw(deck []d.Card, nmbOfCards int, hand Hand) ([]d.Card, Hand) {
 	return deck, hand
 }
 
-func dealerChoice(deck []d.Card, dealer Hand) int {
+func dealerTurn(deck []d.Card, dealer Hand) int {
 
 	for {
 		fmt.Printf("Dealer: %v  (%d) \n\n", dealer, dealer.value())
@@ -118,17 +118,26 @@ func start(deck []d.Card, player, dealer Hand) {
 	}
 
 	var action int
+	doubleDown := false
+	turn := 0
 
 	for {
-		fmt.Println("1. Hit")
-		fmt.Println("2. Stand")
-		fmt.Scanf("%d", &action)
+		if doubleDown {
+			action = 2 //Goes directly to dealer phase with a double down
+		} else if turn == 0 {
+			fmt.Println("1. Hit\n2. Stand\n3. Double down")
+			fmt.Scanf("%d", &action)
+		} else if turn > 0 {
+			fmt.Println("1. Hit\n2. Stand")
+			fmt.Scanf("%d", &action)
+		}
 
 		switch action {
 		case 1:
 			deck, player = draw(deck, 1, player) //Player draws 1
 			fmt.Printf("\nDealer: %v \n\n", dealer[0])
 			fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
+			turn++
 
 			if player.value() > blackjack {
 				fmt.Println("You have been busted!")
@@ -136,7 +145,7 @@ func start(deck []d.Card, player, dealer Hand) {
 			}
 
 		case 2:
-			dealerValue := dealerChoice(deck, dealer)
+			dealerValue := dealerTurn(deck, dealer)
 
 			fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 
@@ -158,6 +167,21 @@ func start(deck []d.Card, player, dealer Hand) {
 			} else {
 				fmt.Println("Dealer is busted! The player has won")
 				return
+			}
+		case 3:
+			if turn > 0 {
+				fmt.Print("Cannot double down after hitting once\n\n")
+				break
+			}
+			deck, player = draw(deck, 1, player) //Player draws 1
+			fmt.Printf("\nDealer: %v \n\n", dealer[0])
+			fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
+
+			if player.value() > blackjack {
+				fmt.Println("You have been busted!")
+				return
+			} else {
+				doubleDown = true
 			}
 		}
 
