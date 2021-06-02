@@ -27,8 +27,7 @@ func (h Hand) String() string {
 
 //To calculate the value of the hand
 func (h Hand) value() int {
-	var value int
-	var aces int
+	var value, aces int
 
 	for _, card := range h {
 		switch card.Rank {
@@ -106,13 +105,11 @@ func dealerChoice(deck []d.Card, dealer Hand) int {
 func start(deck []d.Card, player, dealer Hand) {
 
 	for i := 0; i < 2; i++ {
-
 		deck, player = draw(deck, 1, player)
 		deck, dealer = draw(deck, 1, dealer)
 	}
 
-	fmt.Println()
-	fmt.Printf("Dealer: %v \n\n", dealer[0])
+	fmt.Printf("\nDealer: %v \n\n", dealer[0])
 	fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 
 	if player.value() == blackjack {
@@ -130,20 +127,22 @@ func start(deck []d.Card, player, dealer Hand) {
 		switch action {
 		case 1:
 			deck, player = draw(deck, 1, player) //Player draws 1
-			fmt.Println()
-			fmt.Printf("Dealer: %v \n\n", dealer[0])
+			fmt.Printf("\nDealer: %v \n\n", dealer[0])
 			fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
+
+			if player.value() > blackjack {
+				fmt.Println("You have been busted!")
+				return
+			}
+
 		case 2:
 			dealerValue := dealerChoice(deck, dealer)
 
-			if dealerValue < blackjack {
-				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
+			fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
 
-				if player.value() > blackjack {
-					fmt.Println("You have been busted")
-					return
+			if dealerValue <= blackjack {
 
-				} else if player.value() == dealerValue {
+				if player.value() == dealerValue {
 					fmt.Println("It is a push. Nobody wins")
 					return
 
@@ -151,28 +150,17 @@ func start(deck []d.Card, player, dealer Hand) {
 					fmt.Println("The player has won")
 					return
 
-				} else if player.value() < dealerValue {
+				} else if player.value() < dealerValue || dealerValue == blackjack {
 					fmt.Println("The dealer has won")
 					return
 				}
 
-			} else if dealerValue == blackjack {
-				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
-				fmt.Println("The dealer has won")
-				return
-
 			} else {
-				fmt.Printf("Player: %v  (%d) \n\n", player, player.value())
-				fmt.Println("Dealer is busted!")
-				fmt.Println("The player has won")
+				fmt.Println("Dealer is busted! The player has won")
 				return
 			}
 		}
 
-		if player.value() > blackjack {
-			fmt.Println("You have been busted!")
-			return
-		}
 	}
 
 }
@@ -197,7 +185,7 @@ func main() {
 				}
 			}(*numberOfDecks, *shuffle)
 
-			fmt.Println("What do you want to do?")
+			fmt.Println("\n\nWhat do you want to do?")
 			fmt.Println("1. Play the game")
 			fmt.Println("2. Exit the game")
 
@@ -205,7 +193,7 @@ func main() {
 
 			switch option {
 			case 1:
-				fmt.Print("Let's start! \n\n")
+				fmt.Print("Let's start! \n")
 				start(deck, player, dealer)
 
 			case 2:
