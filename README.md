@@ -1,7 +1,7 @@
 # blackjack
 A blackjack game that uses a general purpose deck package in Golang
 The deck import in blackjack.go may change depending on the folder 
-Only supports 1 player and 1 dealer so far
+Supports multiple players vs 1 dealer
 
 RULES:
 1. A blackjack wins the game for the player (unless dealer also has blackjack)
