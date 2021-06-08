@@ -73,8 +73,6 @@ func (p *players) initialise(deck *[]d.Card, playersNmb int) {
 		*deck, player = draw(*deck, 2, player)
 		*p = append(*p, player)
 	}
-
-	//return *deck
 }
 
 /* Main game functions */
@@ -117,7 +115,7 @@ func dealerTurn(deck []d.Card, dealer Hand) int {
 
 }
 
-func playerTurn(deck *[]d.Card, player, dealer Hand, playerNumber int) {
+func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber int) {
 
 	var action int
 	doubleDown := false
@@ -137,12 +135,11 @@ func playerTurn(deck *[]d.Card, player, dealer Hand, playerNumber int) {
 
 		switch action {
 		case 1:
-			*deck, player = draw(*deck, 1, player) //Player draws 1
-			fmt.Printf("\nDealer: %v \n\n", dealer[0])
+			*deck, *player = draw(*deck, 1, *player) //Player draws 1
 			fmt.Printf("Player %d: %v  (%d) \n\n", playerNumber, player, player.value())
 			turn++
 
-			if player.value() > blackjack {
+			if (player).value() > blackjack {
 				return
 			}
 
@@ -153,11 +150,11 @@ func playerTurn(deck *[]d.Card, player, dealer Hand, playerNumber int) {
 				fmt.Print("Cannot double down after hitting once\n\n")
 				break
 			}
-			*deck, player = draw(*deck, 1, player) //Player draws 1
+			*deck, *player = draw(*deck, 1, *player) //Player draws 1
 			fmt.Printf("\nDealer: %v \n\n", dealer[0])
 			fmt.Printf("Player %d: %v  (%d) \n\n", playerNumber, player, player.value())
 
-			if player.value() > blackjack {
+			if (player).value() > blackjack {
 				return
 			} else {
 				doubleDown = true
@@ -175,18 +172,19 @@ func start(deck *[]d.Card, dealer Hand, allPlayers players) {
 		*deck, dealer = draw(*deck, 1, dealer)
 	}
 
-	for i, player := range allPlayers {
-		if player.value() == blackjack {
-			fmt.Printf("Player %d: %v  (%d) \n\n", i+1, player, player.value())
+	for i := 0; i < len(allPlayers); i++ {
+		if allPlayers[i].value() == blackjack {
+			fmt.Printf("Player %d: %v  (%d) \n\n", i+1, allPlayers[i], allPlayers[i].value())
 			continue
 		} else {
-			playerTurn(deck, player, dealer, i+1)
+			playerTurn(deck, &allPlayers[i], dealer, i+1)
 		}
 	}
 
 	dealerValue := dealerTurn(*deck, dealer)
 
 	for i, player := range allPlayers {
+		fmt.Printf("Player %d: %v  (%d) \n\n", i+1, player, player.value())
 		switch {
 		case dealerValue > blackjack:
 			if player.value() > blackjack {
@@ -242,7 +240,6 @@ func main() {
 		case 1:
 			fmt.Print("Let's start! \n")
 			start(&deck, dealer, allPlayers)
-
 		case 2:
 			fmt.Println("Thanks for playing!")
 			return
