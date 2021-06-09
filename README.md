@@ -1,4 +1,4 @@
-# blackjack
+# Blackjack
 A blackjack game that uses a general purpose deck package in Golang
 The deck import in blackjack.go may change depending on the folder 
 Supports multiple players vs 1 dealer
@@ -9,3 +9,8 @@ RULES:
 3. At >= 17, the dealer stops playing, unless it is a soft 17 or above (with an Ace)
 4. The player with the bigger hands win
 5. Supports the following actions for a player: Hit/ Stand/ Double Down
+
+# Running the code
+$ go run blackjack.go -decks=2 -players=2 -shuffle=true
+
+use --help for details on the flag

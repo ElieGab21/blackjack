@@ -154,7 +154,7 @@ func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber int) {
 			fmt.Printf("\nDealer: %v \n\n", dealer[0])
 			fmt.Printf("Player %d: %v  (%d) \n\n", playerNumber, player, player.value())
 
-			if (player).value() > blackjack {
+			if player.value() > blackjack {
 				return
 			} else {
 				doubleDown = true
@@ -166,22 +166,7 @@ func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber int) {
 	}
 }
 
-func start(deck *[]d.Card, dealer Hand, allPlayers players) {
-
-	for i := 0; i < 2; i++ {
-		*deck, dealer = draw(*deck, 1, dealer)
-	}
-
-	for i := 0; i < len(allPlayers); i++ {
-		if allPlayers[i].value() == blackjack {
-			fmt.Printf("Player %d: %v  (%d) \n\n", i+1, allPlayers[i], allPlayers[i].value())
-			continue
-		} else {
-			playerTurn(deck, &allPlayers[i], dealer, i+1)
-		}
-	}
-
-	dealerValue := dealerTurn(*deck, dealer)
+func finalChoice(allPlayers players, dealerValue int) {
 
 	for i, player := range allPlayers {
 		fmt.Printf("Player %d: %v  (%d) \n\n", i+1, player, player.value())
@@ -208,6 +193,25 @@ func start(deck *[]d.Card, dealer Hand, allPlayers players) {
 			}
 		}
 	}
+
+}
+
+func start(deck *[]d.Card, dealer Hand, allPlayers players) {
+
+	for i := 0; i < 2; i++ {
+		*deck, dealer = draw(*deck, 1, dealer)
+	}
+
+	for i := 0; i < len(allPlayers); i++ {
+		if allPlayers[i].value() == blackjack {
+			fmt.Printf("Player %d: %v  (%d) \n\n", i+1, allPlayers[i], allPlayers[i].value())
+			continue
+		} else {
+			playerTurn(deck, &allPlayers[i], dealer, i+1)
+		}
+	}
+
+	finalChoice(allPlayers, dealerTurn(*deck, dealer))
 
 }
 
