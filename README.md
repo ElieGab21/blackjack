@@ -15,3 +15,11 @@ RULES:
     $ go run blackjack.go -decks=2 -players=2 -shuffle=true -money=100  
 
 use --help for details on the flag
+
+# The deck folder
+Deck.go is a general purpose deck package that doesn't apply only to blackjack. Contains:
+- Create a deck (of multiple decks)
+- Filter cards out of a deck
+- Shuffle a deck
+- Add jokers
+- Cards themselves with Card Rank and Values
