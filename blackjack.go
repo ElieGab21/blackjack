@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	d "github/blackjack/deck"
 	"strings"
+
+	d "github.com/ElieGab21/blackjack/deck"
 )
 
 const (
@@ -142,7 +143,7 @@ func dealerTurn(deck []d.Card, dealer Hand) int {
 
 }
 
-func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber, bet int) {
+func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber, bet int) bool {
 
 	var action int
 	doubleDown := false
@@ -153,7 +154,7 @@ func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber, bet int
 		fmt.Printf("Player %d: %v  (%d) | bet: %d \n\n", playerNumber, player, player.value(), bet)
 
 		if doubleDown {
-			action = 2 //Goes directly to dealer phase with a double down
+			return true //Goes directly to dealer phase with a double down
 		} else {
 			fmt.Printf("Player %d turn: \n", playerNumber)
 			fmt.Println("1. Hit\n2. Stand\n3. Double down")
@@ -167,11 +168,11 @@ func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber, bet int
 			turn++
 
 			if (player).value() > blackjack {
-				return
+				return false
 			}
 
 		case 2:
-			return
+			return false
 		case 3:
 			if turn > 0 {
 				fmt.Print("Cannot double down after hitting once\n\n")
@@ -179,10 +180,10 @@ func playerTurn(deck *[]d.Card, player *Hand, dealer Hand, playerNumber, bet int
 			}
 			*deck, *player = draw(*deck, 1, *player) //Player draws 1
 			fmt.Printf("\nDealer: %v \n\n", dealer[0])
-			fmt.Printf("Player %d: %v  (%d) | bet: %d\n\n", playerNumber, player, player.value(), bet)
+			fmt.Printf("Player %d: %v  (%d) | bet: %d\n\n", playerNumber, player, player.value(), bet*2)
 
 			if player.value() > blackjack {
-				return
+				return true
 			} else {
 				doubleDown = true
 			}
@@ -237,8 +238,12 @@ func start(deck *[]d.Card, dealer Hand, allPlayers players) {
 		if allPlayers[i].cards.value() == blackjack {
 			fmt.Printf("Player %d: %v  (%d) \n\n", i+1, allPlayers[i].cards, allPlayers[i].cards.value())
 			continue
+		} else if allPlayers[i].totalMoney <= 0 {
+			continue
 		} else {
-			playerTurn(deck, &allPlayers[i].cards, dealer, i+1, *&allPlayers[i].bet)
+			if playerTurn(deck, &allPlayers[i].cards, dealer, i+1, *&allPlayers[i].bet) {
+				allPlayers[i].bet *= 2
+			}
 		}
 	}
 
@@ -270,7 +275,11 @@ func main() {
 		allPlayers.initialise(&deck, int(*numberOfPlayers), int(*startMoney))
 
 		for i, player := range allPlayers {
-			fmt.Printf("\n\nPlayer %d total Money: %d \n", i+1, player.totalMoney)
+			if player.totalMoney == 0 {
+				fmt.Printf("\n\nPlayer %d has no more money ", i+1)
+			} else {
+				fmt.Printf("\n\nPlayer %d total Money: %d \n", i+1, player.totalMoney)
+			}
 		}
 
 		fmt.Println("\n\nWhat do you want to do?")
@@ -281,14 +290,19 @@ func main() {
 		case 1:
 			for i := 0; i < int(*numberOfPlayers); i++ {
 				var bet int
-				fmt.Printf("Player %d, what is your bet?\n", i+1)
-				fmt.Scanf("%d", &bet)
+				if allPlayers[i].totalMoney > 0 {
+					fmt.Printf("\nPlayer %d, what is your bet?\n", i+1)
+					fmt.Scanf("%d", &bet)
 
-				if bet > allPlayers[i].totalMoney {
-					fmt.Println("You are going all in. Bet bigger than total money")
-					allPlayers[i].bet = allPlayers[i].totalMoney
+					if bet > allPlayers[i].totalMoney {
+						fmt.Println("You are going all in. Bet bigger than total money")
+						allPlayers[i].bet = allPlayers[i].totalMoney
+					} else {
+						allPlayers[i].bet = bet
+					}
+
 				} else {
-					allPlayers[i].bet = bet
+					fmt.Println("You have no more money")
 				}
 			}
 
