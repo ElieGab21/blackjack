@@ -2,6 +2,7 @@
 A blackjack game that uses a general purpose deck package in Golang
 The deck import in blackjack.go may change depending on the folder 
 Supports multiple players vs 1 dealer
+Supports betting
 
 RULES:
 1. A blackjack wins the game for the player (unless dealer also has blackjack)
@@ -11,6 +12,6 @@ RULES:
 5. Supports the following actions for a player: Hit/ Stand/ Double Down
 
 # Running the code
-$ go run blackjack.go -decks=2 -players=2 -shuffle=true
+    $ go run blackjack.go -decks=2 -players=2 -shuffle=true -money=100  
 
 use --help for details on the flag
